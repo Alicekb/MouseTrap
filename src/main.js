@@ -75,7 +75,8 @@ const createScene = () => {
     
     
     startButton.onPointerClickObservable.add(() => {
-        GUI.all[0].advancedTexture.removeControl(backdrop);
+      GUI.all[0].advancedTexture.removeControl(backdrop);
+      GUI.all[0].displayPlayerTurnHeader();
 
       const rollButton = GUI.all[0].createRollButton();
       rollButton.onPointerClickObservable.add(() => {
@@ -86,6 +87,8 @@ const createScene = () => {
       SceneLoader.ImportMesh(null, '', mouseModel, scene, function (res) {
         createPlayers(res[0]);
       })
+
+      
     });
 
   initializeGame(scene);
@@ -109,7 +112,6 @@ const createScene = () => {
 
 
 const diceRoller = () => {
-  console.log(GLOBALS.playerCount);
   return Math.floor(Math.random() * 6) + 1
 }
 
@@ -154,9 +156,9 @@ const moveSpaces = (player, spaceCount) => {
         newSpaceIndex = startSpace + spaceCount;
     }
 
-    const endSpace = adjustPlayerPositions(GLOBALS.boardSpaces[player.currentSpace + spaceCount], player.currentSpace + spaceCount);
+    const endSpace = adjustPlayerPositions(GLOBALS.boardSpaces[newSpaceIndex], newSpaceIndex);
     for (let i = player.currentSpace; i < player.currentSpace + spaceCount; i++) {
-        if (GLOBALS.boardSpaces[i].corner != null) {
+        if (GLOBALS.boardSpaces[i] != null && GLOBALS.boardSpaces[i].corner != null) {
             // const cornerAnim = new Animation(`moveToCorner-${i}`, 30, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CONSTANT);
             // player.mesh.animations.push(cornerAnim);
             
@@ -166,10 +168,10 @@ const moveSpaces = (player, spaceCount) => {
         }
     }
     
-    Animation.CreateAndStartAnimation("moveSpaces", player.mesh, "position", 30, 30, player.mesh.position, new Vector3(endSpace.x, 0, endSpace.z), Animation.ANIMATIONLOOPMODE_CONSTANT);
-    player.currentSpace = player.currentSpace + spaceCount;
+    Animation.CreateAndStartAnimation("moveSpaces", player.mesh, "position", 30, 30, player.mesh.position, new Vector3(GLOBALS.boardSpaces[newSpaceIndex].x, 0, GLOBALS.boardSpaces[newSpaceIndex].z), Animation.ANIMATIONLOOPMODE_CONSTANT);
+    player.currentSpace = newSpaceIndex;
 
-    GUI.all[0].createPopUpBox('resolveSpace', [`You rolled a ${spaceCount}`, endSpace.body]);
+    GUI.all[0].createPopUpBox('resolveSpace', [`You rolled a ${spaceCount}`, GLOBALS.boardSpaces[newSpaceIndex].body]);
   resolveSpace(endSpace);
 }
 
@@ -189,6 +191,7 @@ const resolveSpace = (space) => {
     }
 
     GLOBALS.currentPlayer++;
+  GUI.all[0].updatePlayerTurnHeader(GLOBALS.currentPlayer % GLOBALS.playerCount + 1);
 
 }
 
@@ -395,52 +398,60 @@ const buildNewPiece = () => {
                 trackPartTwo.material = redMaterial;
 
                 trackPartOne.addChild(trackPartTwo);
-            });
-            SceneLoader.ImportMesh(null, "", leftCurveTrackModel, scene, function(res) {
-                const trackPartThree = res[0];
-                trackPartThree.scaling = new Vector3(0.0125, 0.0125, 0.0125);
-                trackPartThree.position = new Vector3(-0.5, 1.1, 0.65);
-                trackPartThree.rotation.y = Math.PI;
-                trackPartThree.rotation.x = Math.PI / 2;
 
-                trackPartThree.material = redMaterial;
+                SceneLoader.ImportMesh(null, "", leftCurveTrackModel, scene, function(res) {
+                    const trackPartThree = res[0];
+                    trackPartThree.scaling = new Vector3(0.0125, 0.0125, 0.0125);
+                    trackPartThree.position = new Vector3(-0.5, 1.1, 0.65);
+                    trackPartThree.rotation.y = Math.PI;
+                    trackPartThree.rotation.x = Math.PI / 2;
+    
+                    trackPartThree.material = redMaterial;
+    
+                    trackPartOne.addChild(trackPartThree);
 
-                trackPartOne.addChild(trackPartThree);
-            });
-            SceneLoader.ImportMesh(null, "", straightTrackModel, scene, function(res) {
-                const trackPartFour = res[0];
-                trackPartFour.scaling = new Vector3(0.0125, 0.0125, 0.0125);
-                trackPartFour.position = new Vector3(-.75, 1.1, -0.93);
-                trackPartFour.rotation.y = Math.PI / 2;
-                trackPartFour.rotation.x = Math.PI / 2;
+                    SceneLoader.ImportMesh(null, "", straightTrackModel, scene, function(res) {
+                        const trackPartFour = res[0];
+                        trackPartFour.scaling = new Vector3(0.0125, 0.0125, 0.0125);
+                        trackPartFour.position = new Vector3(-.75, 1.1, -0.93);
+                        trackPartFour.rotation.y = Math.PI / 2;
+                        trackPartFour.rotation.x = Math.PI / 2;
+        
+                        trackPartFour.material = redMaterial;
+        
+                        trackPartOne.addChild(trackPartFour);
 
-                trackPartFour.material = redMaterial;
+                        SceneLoader.ImportMesh(null, "", straightTrackModel, scene, function(res) {
+                            const trackPartFive = res[0];
+                            trackPartFive.scaling = new Vector3(0.0125, 0.0125, 0.0125);
+                            trackPartFive.position = new Vector3(1.1, 1.1, -0.93);
+                            trackPartFive.rotation.y = Math.PI / 2;
+                            trackPartFive.rotation.x = Math.PI / 2;
+            
+                            trackPartFive.material = redMaterial;
+            
+                            trackPartOne.addChild(trackPartFive);
 
-                trackPartOne.addChild(trackPartFour);
-            });
-            SceneLoader.ImportMesh(null, "", straightTrackModel, scene, function(res) {
-                const trackPartFive = res[0];
-                trackPartFive.scaling = new Vector3(0.0125, 0.0125, 0.0125);
-                trackPartFive.position = new Vector3(1.1, 1.1, -0.93);
-                trackPartFive.rotation.y = Math.PI / 2;
-                trackPartFive.rotation.x = Math.PI / 2;
-
-                trackPartFive.material = redMaterial;
-
-                trackPartOne.addChild(trackPartFive);
-            });
-            SceneLoader.ImportMesh(null, "", straightTrackModel, scene, function(res) {
-                const trackPartSix = res[0];
-                trackPartSix.scaling = new Vector3(0.0125, 0.0125, 0.0125);
-                trackPartSix.position = new Vector3(2.95, 1.1, -0.93);
-                trackPartSix.rotation.y = Math.PI / 2;
-                trackPartSix.rotation.x = Math.PI / 2;
-
-                trackPartSix.material = redMaterial;
+                            SceneLoader.ImportMesh(null, "", straightTrackModel, scene, function(res) {
+                                const trackPartSix = res[0];
+                                trackPartSix.scaling = new Vector3(0.0125, 0.0125, 0.0125);
+                                trackPartSix.position = new Vector3(2.95, 1.1, -0.93);
+                                trackPartSix.rotation.y = Math.PI / 2;
+                                trackPartSix.rotation.x = Math.PI / 2;
                 
-                trackPartOne.addChild(trackPartSix);
-
-                trackPartOne.addRotation(0, -Math.PI / 35, 0);
+                                trackPartSix.material = redMaterial;
+                                
+                                trackPartOne.addChild(trackPartSix);
+                
+                                trackPartOne.addRotation(0, -Math.PI / 35, 0);
+                        });
+                        
+                    });
+                    
+                });
+                
+            });
+            
             });
             });
             break;
