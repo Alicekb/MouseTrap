@@ -20,6 +20,38 @@ export default class GUI {
     return button;
   }
 
+  createStartingCard() {
+    const backdrop = new Rectangle(`startingCard`);
+    backdrop.width = "1000px";
+    backdrop.height = "700px";
+    backdrop.cornerRadius = 20;
+    backdrop.color = "white";
+    backdrop.thickness = 2;
+    backdrop.background = "black";
+    backdrop.alpha = 0.7;
+
+    const header = new TextBlock(`startingHeader`, "Mouse Trap!");
+    header.fontFamily = 'Carter One', 'cursive';
+    header.fontSizeInPixels = 100;
+    header.color = "white";
+    header.top =  "-250px";
+    header.parent = backdrop;
+
+    const learnBlock = new TextBlock(`learnBlock`, "Learn how to play at: ");
+    learnBlock.fontFamily = 'Carter One', 'cursive';
+    learnBlock.fontSizeInPixels = 22;
+    learnBlock.color = "white";
+    learnBlock.alpha = 0.7;
+    learnBlock.top = "-160px";
+    learnBlock.parent = backdrop;
+
+    // const header = 
+
+    this.advancedTexture.addControl(backdrop);
+    this.advancedTexture.addControl(header);
+    this.advancedTexture.addControl(learnBlock);
+  }
+
   createPopUpBox(name, texts) {
     const rect = new Rectangle(`${name}Rectangle`);
     rect.width = "400px";
@@ -30,10 +62,11 @@ export default class GUI {
     rect.background = "black";
     rect.alpha = 0.7;
 
-    const textBoxes = []
+    const textBoxes = [];
 
     texts.forEach((text, index) => {
       const label = new TextBlock(`${name}Label`, text);
+      label.fontFamily = 'Carter One', 'cursive';
       label.color = "white";
       label.alpha = 0.7;
       label.top = index > 0 ? "-50px" : "0";

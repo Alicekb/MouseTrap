@@ -53,6 +53,9 @@ const createScene = () => {
     initializeGame(scene);
     new GUI();
     const rollButton = GUI.all[0].createRollButton();
+  GUI.all[0].createStartingCard()
+
+
     rollButton.onPointerUpObservable.add(() => {
       let rollResult = diceRoller();
       // this.create
