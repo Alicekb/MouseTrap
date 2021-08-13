@@ -1,7 +1,9 @@
 [
     {
         "type": "start",
-        "body": "Start"
+        "body": "Start",
+        "x": -8,
+        "z": -1.2
     },
     {
         "type": "build",

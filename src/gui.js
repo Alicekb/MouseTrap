@@ -119,15 +119,12 @@ export default class GUI {
 
   createPopUpBox(name, texts) {
     const rect = new Rectangle(`${name}Rectangle`);
-    rect.width = '400px';
-    rect.height = '200px';
+    rect.width = '1000px';
+    rect.height = '700px';
     rect.cornerRadius = 20;
-    rect.color = 'white';
-    rect.thickness = 2;
-    rect.background = 'black';
-    rect.alpha = 0.7;
-
-    const textBoxes = [];
+    rect.color = 'black';
+    rect.thickness = 10;
+    rect.background = 'skyblue';
 
     texts.forEach((text, index) => {
       const label = new TextBlock(`${name}Label`, text);
@@ -136,7 +133,7 @@ export default class GUI {
       label.alpha = 0.7;
       label.top = index > 0 ? '-50px' : '0';
       label.parent = rect;
-      textBoxes.push(label);
+      rect.addControl(label)
     });
 
     const button = new Button.CreateSimpleButton(`${name}CloseButton`, 'close');
@@ -149,18 +146,11 @@ export default class GUI {
     button.alpha = 0.8
 
     button.onPointerUpObservable.add(() => {
-      this.advancedTexture.removeControl(rect);
-      textBoxes.forEach(textBox => {
-        this.advancedTexture.removeControl(textBox);
-      })
-      this.advancedTexture.removeControl(button);
+      this.advancedTexture.removeControl(rect)
     })
 
+    rect.addControl(button)
     this.advancedTexture.addControl(rect);
-    textBoxes.forEach(textBox => {
-      this.advancedTexture.addControl(textBox);
-    })
-    this.advancedTexture.addControl(button);
   }
 
   displayPlayerTurnHeader() {

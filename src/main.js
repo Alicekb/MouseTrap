@@ -37,6 +37,7 @@ import GUI from './gui.js'
 
 const canvas = document.getElementById("renderCanvas"); // Get the canvas element
 const engine = new Engine(canvas, true); // Generate the BABYLON 3D engine
+const messagerQueue = [];
 
 let GLOBALS = {
   mice: [],
@@ -151,9 +152,10 @@ const createPlayers = (mouseMesh) => {
 
 const moveSpaces = (player, spaceCount) => {
     let newSpaceIndex = player.currentSpace + spaceCount;
-    if (newSpaceIndex > GLOBALS.boardSpaces.length) {
+    if (newSpaceIndex > GLOBALS.boardSpaces.length - 1) {
         let startSpace = 44; //The SAFE space
-        newSpaceIndex = startSpace + spaceCount;
+        let newSpaceCount = newSpaceIndex - GLOBALS.boardSpaces.length;
+        newSpaceIndex = startSpace + newSpaceCount;
     }
 
     const endSpace = adjustPlayerPositions(GLOBALS.boardSpaces[newSpaceIndex], newSpaceIndex);
@@ -191,7 +193,7 @@ const resolveSpace = (space) => {
     }
 
     GLOBALS.currentPlayer++;
-  GUI.all[0].updatePlayerTurnHeader(GLOBALS.currentPlayer % GLOBALS.playerCount + 1);
+    GUI.all[0].updatePlayerTurnHeader(GLOBALS.currentPlayer % GLOBALS.playerCount + 1);
 
 }
 
