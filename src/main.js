@@ -21,6 +21,7 @@ import crankModel from '../assets/models/crank.stl';
 import gearyModel from '../assets/models/geary.stl';
 import stopModel from '../assets/models/stop.stl';
 import boardImage from '../assets/board.jpg';
+import './styles.css';
 import Player from './player.js';
 import GUI from './gui.js'
 
