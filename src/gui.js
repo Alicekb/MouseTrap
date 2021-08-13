@@ -16,15 +16,17 @@ export default class GUI {
   };
 
   createRollButton() {
-    const button = Button.CreateSimpleButton('roll', 'Roll Dice!');
-    button.width = '100px';
-    button.height = '50px';
+    const button = Button.CreateSimpleButton('roll', 'Roll Die');
+    button.fontFamily = 'Carter One', 'cursive';
+    button.fontSizeInPixels = 40;
+    button.width = '200px';
+    button.height = '100px';
     button.color = 'black';
+    button.background = 'white';
+    button.verticalAlignment = Control.HORIZONTAL_ALIGNMENT_TOP;
+    button.top = "280px";
     button.cornerRaidus = 20;
     button.thickness = 4;
-    button.background = 'salmon';
-    button.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    button.left = '-20px';
 
     this.advancedTexture.addControl(button);
     return button;
