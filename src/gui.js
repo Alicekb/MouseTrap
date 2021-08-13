@@ -29,7 +29,7 @@ export default class GUI {
     return button;
   }
 
-  createStartingCard() {
+  createStartingCard(GLOBALS) {
     const backdrop = new Rectangle(`startingCard`);
     backdrop.width = "1000px";
     backdrop.height = "700px";
@@ -41,11 +41,11 @@ export default class GUI {
 
     const header = new TextBlock(`startingHeader`, "Mouse Trap!");
     header.fontFamily = 'Carter One', 'cursive';
-    header.fontSizeInPixels = 100;
+    header.fontSizeInPixels = 120;
     header.color = "black";
     header.thickness = 2;
     header.background = "white";
-    header.top =  "-220px";
+    header.top =  "-240px";
 
     const linkBlockButton = new Button.CreateSimpleButton('linkBlockButton', 'Learn How to Play');
     linkBlockButton.fontFamily = 'Carter One', 'cursive';
@@ -53,6 +53,7 @@ export default class GUI {
     linkBlockButton.height = "50px";
     linkBlockButton.width = "700px";
     linkBlockButton.thickness = 4;
+    linkBlockButton.cornerRadius = 20;
     linkBlockButton.color = "black";
     linkBlockButton.background = "white";
     linkBlockButton.top = "-120px";
@@ -64,22 +65,25 @@ export default class GUI {
     numberOfPlayersLabel.color = "black";
     numberOfPlayersLabel.thickness = 2;
     numberOfPlayersLabel.background = "white";
-    numberOfPlayersLabel.top = "-40px";
+    numberOfPlayersLabel.top = "-35px";
 
     const radioPanel = new StackPanel();
     radioPanel.height = "250px"
-    radioPanel.top = "120px";
+    radioPanel.top = "125px";
 
-    ['2 players', '3 players', '4 players'].forEach(name => {
+    ['2 players', '3 players', '4 players'].forEach((name, index) => {
       const radioButtonPanel = new RadioButton.AddRadioButtonWithHeader(name, 'numberOfPlayers', name === '2 players' ? true : false, (button, state) => {
         if (state) {
-          console.log('2');
+          GLOBALS.playerCount = index + 2
         };
       });
 
       radioButtonPanel.fontSize = 35;
       radioButtonPanel.fontFamily = 'Carter One', 'cursive';
       radioButtonPanel.height = "60px";
+      radioButtonPanel.children[0].color = "pink";
+      radioButtonPanel.children[0].height = "25px";
+      radioButtonPanel.children[0].width = "25px";
       radioButtonPanel.children[1].color = "black";
 
       radioPanel.addControl(radioButtonPanel);
@@ -89,14 +93,26 @@ export default class GUI {
       window.open('https://www.hasbro.com/common/instruct/mtrap.pdf', '_blank')
     })
 
-    const startbuttion = new Button.CreateSimpleButton('startButton', 'Start Game');
+    const startButton = new Button.CreateSimpleButton('startButton', 'START');
+    startButton.fontSize = 35;
+    startButton.fontFamily = 'Carter One', 'cursive';
+    startButton.width = "155px";
+    startButton.height = "45px";
+    startButton.thickness = 4;
+    startButton.cornerRadius = 20;
+    startButton.color = "black";
+    startButton.background = "white";
+    startButton.top = "250px";
 
     backdrop.addControl(header);
     backdrop.addControl(linkBlockButton);
     backdrop.addControl(numberOfPlayersLabel);
+    backdrop.addControl(startButton);
 
     backdrop.addControl(radioPanel);
     this.advancedTexture.addControl(backdrop);
+
+    return { startButton, backdrop }
   }
 
   createPopUpBox(name, texts) {
