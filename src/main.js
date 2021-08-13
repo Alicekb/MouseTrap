@@ -12,9 +12,11 @@ import {
   PointerDragBehavior, 
   Animation, 
   GroundBuilder,
-  BoxBuilder
+  BoxBuilder,
+  KeyboardEventTypes
 } from '@babylonjs/core';
 import "@babylonjs/loaders/STL";
+import "@babylonjs/core/Animations/animatable";
 import boardSpaces from './boardSpaces.json';
 import mouseModel from '../assets/models/mouse.stl';
 import crankModel from '../assets/models/crank.stl';
@@ -32,9 +34,11 @@ let GLOBALS = {
   mice: [],
   board: undefined,
   camera: undefined,
+  playerCount: 4,
   currentPlayer: 0,
   currentBuildPiece: 0,
-  boardSpaces: boardSpaces
+  boardSpaces: boardSpaces,
+  scene: undefined
 }
 
 let behavior;
@@ -42,6 +46,7 @@ let behavior;
 // Add your code here matching the playground format
 const createScene = () => {
     const scene = new Scene(engine);
+    GLOBALS.scene = scene;
     
     // Light
     const light = new DirectionalLight('light', new Vector3(0, -1, 0), scene);
@@ -62,6 +67,16 @@ const createScene = () => {
       moveSpaces(Player.all[GLOBALS.currentPlayer % 4], rollResult);
 
     });
+
+    scene.onKeyboardObservable.add((keyboardInfo) => {
+    switch (keyboardInfo.type) {
+        case KeyboardEventTypes.KEYDOWN:
+            let rollResult = diceRoller();
+            // this.create
+            moveSpaces(Player.all[GLOBALS.currentPlayer % 4], rollResult);
+            break;
+    }
+    })
 
     return scene;
 };
@@ -85,6 +100,7 @@ const initializeGame = (scene) => {
     board.scaling = new Vector3(2, 2, 2);
     
     SceneLoader.ImportMesh(null, '', mouseModel, scene, function(res) {
+        console.log(res);
         createPlayers(res[0]);
         // res[0].scaling = new BABYLON.Vector3(0.007, 0.007, 0.007)
         
@@ -112,10 +128,10 @@ const initializeGame = (scene) => {
 const createPlayers = (mouseMesh) => {
     mouseMesh.scaling = new Vector3(0.007, 0.007, 0.007)
     
-    new Player(mouseMesh, 0, 0, 'playerOne', new Vector3(-8, 0, 1.7))
-    new Player(mouseMesh, 0, 0, 'playerTwo', new Vector3(-8, 0, 1))
-    new Player(mouseMesh, 0, 0, 'playerThree', new Vector3(-8, 0, 1.3))
-    new Player(mouseMesh, 0, 0, 'playerFour', new Vector3(-8, 0, 1.5))
+    new Player(mouseMesh, 0, 0, 'playerOne', new Vector3(-8.2, 0, 1.5))
+    new Player(mouseMesh, 0, 0, 'playerTwo', new Vector3(-7.8, 0, 1))
+    new Player(mouseMesh, 0, 0, 'playerThree', new Vector3(-8.6, 0, 1.3))
+    new Player(mouseMesh, 0, 0, 'playerFour', new Vector3(-7.8, 0, 1.5))
 
 
     mouseMesh.dispose()
@@ -123,7 +139,7 @@ const createPlayers = (mouseMesh) => {
 
 const moveSpaces = (player, spaceCount) => {
 
-    const endSpace = GLOBALS.boardSpaces[player.currentSpace + spaceCount];
+    const endSpace = adjustPlayerPositions(GLOBALS.boardSpaces[player.currentSpace + spaceCount], player.currentSpace + spaceCount);
     for (let i = player.currentSpace; i < player.currentSpace + spaceCount; i++) {
         if (GLOBALS.boardSpaces[i].corner != null) {
             // const cornerAnim = new BABYLON.Animation(`moveToCorner-${i}`, 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
@@ -235,25 +251,65 @@ const buildNewPiece = () => {
     }
 }
 
-const switchToIsometric = (scene) => {
-    const token = scene.getMeshByName('token');
-    token.rotation.x = 0;
-    token.position.y = 0;
-    const camera = scene.getCameraByName('camera');
-    camera.position = new Vector3(5, 1, -5);
-    camera.setTarget(token.position);
+const adjustPlayerPositions = (endSpace, endSpaceIndex) => {
 
-    const oldPos = camera.position;
+    var playersOnSpace = [];
+    var newSpace = endSpace;
+    for (let i = 0; i < Player.all.length; i++) {
+        if (Player.all[i].currentSpace == endSpaceIndex)
+            playersOnSpace.push(Player.all[i]);
+    }
 
-    token.rotation.y = -Math.PI / 4;
-    token.position.y = 0.5;
+    if (playersOnSpace.length == 0) return endSpace
 
-    const light = scene.getLightByName('light');
-    light.direction = new Vector3(-5, -5, 5);
+    switch (playersOnSpace.length) {
+        case 1:
+            //If you're moving along the z axis (starting position)
+            if (endSpaceIndex < 7 || (endSpaceIndex > 20 && endSpaceIndex < 34)) {
+                Animation.CreateAndStartAnimation("moveSpaces", playersOnSpace[0].mesh, "position", 30, 30, playersOnSpace[0].mesh.position, new Vector3(endSpace.x - 0.3, 0, endSpace.z), Animation.ANIMATIONLOOPMODE_CONSTANT);
+                newSpace.x = newSpace.x + 0.3;
+            }
+            //If you're moving along the x axis
+            else {
+                Animation.CreateAndStartAnimation("moveSpaces", playersOnSpace[0].mesh, "position", 30, 30, playersOnSpace[0].mesh.position, new Vector3(endSpace.x, 0, endSpace.z - 0.3), Animation.ANIMATIONLOOPMODE_CONSTANT);
+                newSpace.z = newSpace.z + 0.3;
+            }
+            break;
+        case 2:
+            //If you're moving along the z axis (starting position)
+            if (endSpaceIndex < 7 || (endSpaceIndex > 20 && endSpaceIndex < 34)) {
+                Animation.CreateAndStartAnimation("moveSpaces", playersOnSpace[0].mesh, "position", 30, 30, playersOnSpace[0].mesh.position, new Vector3(endSpace.x - 0.3, 0, endSpace.z - 0.1), Animation.ANIMATIONLOOPMODE_CONSTANT);
+                Animation.CreateAndStartAnimation("moveSpaces", playersOnSpace[1].mesh, "position", 30, 30, playersOnSpace[1].mesh.position, new Vector3(endSpace.x + 0.3, 0, endSpace.z - 0.1), Animation.ANIMATIONLOOPMODE_CONSTANT);
+                newSpace.z = newSpace.z + 0.2;
+            }
+            else {
+                Animation.CreateAndStartAnimation("moveSpaces", playersOnSpace[0].mesh, "position", 30, 30, playersOnSpace[0].mesh.position, new Vector3(endSpace.x - 0.1, 0, endSpace.z - 0.3), Animation.ANIMATIONLOOPMODE_CONSTANT);
+                Animation.CreateAndStartAnimation("moveSpaces", playersOnSpace[1].mesh, "position", 30, 30, playersOnSpace[1].mesh.position, new Vector3(endSpace.x - 0.1, 0, endSpace.z + 0.3), Animation.ANIMATIONLOOPMODE_CONSTANT);
+                newSpace.x = newSpace.x + 0.2;
+            }
+            //move them to the left and right and up a bit
+            break;
+        case 3:
+            if (endSpaceIndex < 7 || (endSpaceIndex > 20 && endSpaceIndex < 34)) {
+                Animation.CreateAndStartAnimation("moveSpaces", playersOnSpace[1].mesh, "position", 30, 30, playersOnSpace[1].mesh.position, new Vector3(endSpace.x - 0.3, 0, endSpace.z - 0.3), Animation.ANIMATIONLOOPMODE_CONSTANT);
+                Animation.CreateAndStartAnimation("moveSpaces", playersOnSpace[0].mesh, "position", 30, 30, playersOnSpace[0].mesh.position, new Vector3(endSpace.x - 0.3, 0, endSpace.z + 0.3), Animation.ANIMATIONLOOPMODE_CONSTANT);
+                Animation.CreateAndStartAnimation("moveSpaces", playersOnSpace[2].mesh, "position", 30, 30, playersOnSpace[2].mesh.position, new Vector3(endSpace.x + 0.3, 0, endSpace.z - 0.3), Animation.ANIMATIONLOOPMODE_CONSTANT);
+                newSpace.x = newSpace.x + 0.3;
+                newSpace.z = newSpace.z + 0.3;
+            }
+            else {
+                Animation.CreateAndStartAnimation("moveSpaces", playersOnSpace[1].mesh, "position", 30, 30, playersOnSpace[1].mesh.position, new Vector3(endSpace.x - 0.3, 0, endSpace.z - 0.3), Animation.ANIMATIONLOOPMODE_CONSTANT);
+                Animation.CreateAndStartAnimation("moveSpaces", playersOnSpace[0].mesh, "position", 30, 30, playersOnSpace[0].mesh.position, new Vector3(endSpace.x - 0.3, 0, endSpace.z + 0.3), Animation.ANIMATIONLOOPMODE_CONSTANT);
+                Animation.CreateAndStartAnimation("moveSpaces", playersOnSpace[2].mesh, "position", 30, 30, playersOnSpace[2].mesh.position, new Vector3(endSpace.x + 0.3, 0, endSpace.z - 0.3), Animation.ANIMATIONLOOPMODE_CONSTANT);
+                newSpace.x = newSpace.x + 0.3;
+                newSpace.z = newSpace.z + 0.3;
+            }
+            break;
+        default:
+            console.log("default? what are you doing here")
+    }
 
-    behavior.detach()
-    const pointerDrag = new PointerDragBehavior({ dragPlaneNormal: new Vector3(0, 1, 0) });
-    pointerDrag.attach(token);
+    return newSpace;
 }
 
 const targetToken = (token, camera) => {
