@@ -1,5 +1,4 @@
 import "@babylonjs/core/Debug/debugLayer";
-import { AdvancedDynamicTexture, Button, Control, Rectangle, TextBlock } from '@babylonjs/gui';
 import { 
   Engine,
   Scene,
@@ -12,7 +11,6 @@ import {
   SceneLoader, 
   PointerDragBehavior, 
   Animation, 
-  Mesh,
   GroundBuilder,
   BoxBuilder
 } from '@babylonjs/core';
@@ -24,6 +22,7 @@ import gearyModel from '../assets/models/geary.stl';
 import stopModel from '../assets/models/stop.stl';
 import boardImage from '../assets/board.jpg';
 import Player from './player.js';
+import GUI from './gui.js'
 
 const canvas = document.getElementById("renderCanvas"); // Get the canvas element
 const engine = new Engine(canvas, true); // Generate the BABYLON 3D engine
@@ -37,119 +36,37 @@ let GLOBALS = {
   boardSpaces: boardSpaces
 }
 
-class GUI {
-    constructor() {
-        this.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI('mouseTrapUI');
-        this.createRollButton()
-        GUI.all.push(this)
-    };
-
-    createRollButton() {
-        const button = Button.CreateSimpleButton('roll', 'Roll Dice!');
-        button.width = "100px";
-        button.height = "50px";
-        button.color = 'black';
-        button.cornerRaidus = 20;
-        button.background = "pink";
-        button.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        button.left = "-20px";
-
-        button.onPointerUpObservable.add(() => {
-            let rollResult = diceRoller();
-            // this.create
-            moveSpaces(Player.all[GLOBALS.currentPlayer % 4], rollResult);
-            
-        });
-
-        this.advancedTexture.addControl(button);
-    }
-
-    createPopUpBox(name, texts) {
-        const rect = new Rectangle(`${name}Rectangle`);
-        rect.width = "400px";
-        rect.height = "200px";
-        rect.cornerRadius = 20;
-        rect.color = "white";
-        rect.thickness = 2;
-        rect.background = "black";
-        rect.alpha = 0.7;
-
-        const textBoxes = []
-
-        texts.forEach((text, index) => {
-            const label = new TextBlock(`${name}Label`, text);
-            label.color = "white";
-            label.alpha = 0.7;
-            label.top = index > 0 ? "-50px" : "0";
-            label.parent = rect;
-            textBoxes.push(label);
-        });
-        
-        const button = new Button.CreateSimpleButton(`${name}CloseButton`, 'close');
-        button.width = "150px";
-        button.height = "40px";
-        button.color = "white";
-        button.background = "black";
-        button.top = "40px";
-        button.parent = rect;
-        button.alpha = 0.8
-
-        button.onPointerUpObservable.add(() => {
-            this.advancedTexture.removeControl(rect);
-            textBoxes.forEach(textBox => {
-                this.advancedTexture.removeControl(textBox);
-            })
-            this.advancedTexture.removeControl(button);
-        })
-        
-        this.advancedTexture.addControl(rect);
-        textBoxes.forEach(textBox => {
-            this.advancedTexture.addControl(textBox);
-        })
-        this.advancedTexture.addControl(button);
-    }
-}
-
-GUI.all = []
-
 let behavior;
 
 // Add your code here matching the playground format
 const createScene = () => {
-    const scene = new Scene(engine)
+    const scene = new Scene(engine);
     
     // Light
-    const light = new DirectionalLight('light', new Vector3(0, -1, 0), scene)
+    const light = new DirectionalLight('light', new Vector3(0, -1, 0), scene);
     light.specular = new Color3(0, 0, 0);    
 
-    const lightTwo = new DirectionalLight('lightTwo', new Vector3(0, 1, 0), scene)
+    const lightTwo = new DirectionalLight('lightTwo', new Vector3(0, 1, 0), scene);
     light.specular = new Color3(0, 0, 0);    
 
-    initializeGame(scene)
-    // initializeGUI()
-    new GUI('mouseTrapUI')
-    // BABYLON.SceneLoader.ImportMeshAsync("mouse", "", "mouse.babylon", scene)
-    // .then(res => {
-    //     const { meshes } = res;
-    //     console.log(res)
-        
-    //     meshes.forEach(mesh => {
-    //       mesh.position = new BABYLON.Vector3(0, 0, 0);
-    //     });
-    //     const mouse = BABYLON.Mesh.MergeMeshes(meshes, false, true)
-    //     console.log(mouse)
-    //     mouse.position = new Vector(2, 3, 4);
-    //     // mouse.position.y = 10
-    // })
+    initializeGame(scene);
+    new GUI();
+    const rollButton = GUI.all[0].createRollButton();
+    rollButton.onPointerUpObservable.add(() => {
+      let rollResult = diceRoller();
+      // this.create
+      moveSpaces(Player.all[GLOBALS.currentPlayer % 4], rollResult);
 
-    
+    });
 
     return scene;
 };
 
+
 const diceRoller = () => {
-    return Math.floor(Math.random() * 6) + 1
+  return Math.floor(Math.random() * 6) + 1
 }
+
 
 const initializeGame = (scene) => {
     // Camera
