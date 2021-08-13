@@ -1,0 +1,320 @@
+const boardSpaces = [
+    {
+        "type": "start",
+        "body": "Start"
+    },
+    {
+        "type": "build",
+        "body": "2",
+        "x": -8,
+        "z": -0.29
+    },
+    {
+        "type": "gaincheese",
+        "cheese": 2,
+        "body": "Take two pieces of cheese",
+        "x": -8,
+        "z": -1.3
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": -8,
+        "z": -2.49
+    },
+    {
+        "type": "build",
+        "body": "2",
+        "x": -8,
+        "z": -3.65
+    },
+    {
+        "type": "goback",
+        "spaces": 3,
+        "body": "Cat's Meow! Go back 3 spaces",
+        "x": -8,
+        "z": -5.13
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": -8,
+        "z": -6.59
+    },
+    {
+        "type": "gaincheese",
+        "cheese": 1,
+        "body": "Take 1 piece of cheese",
+        "corner": true,
+        "x": -8.42,
+        "z": -7.87
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": -7.21,
+        "z": -8.38
+    },
+    {
+        "type": "build",
+        "body": "2 3",
+        "x": -6.04,
+        "z": -8.21
+    },
+    {
+        "type": "goforward",
+        "spaces": 4,
+        "body": "Move ahead four spaces",
+        "x": -4.84,
+        "z": -7.94
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": -3.74,
+        "z": -7.75
+    },
+    {
+        "type": "build",
+        "body": "2",
+        "x": -2.73,
+        "z": -8.11
+    },
+    {
+        "type": "goback",
+        "spaces": 13,
+        "body": "Fat cat!!! Go back to start",
+        "x": -1.43,
+        "z": -8.01
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": 0.13,
+        "z": -7.68
+    },
+    {
+        "type": "goback",
+        "spaces": 6,
+        "body": "Go back 6 spaces",
+        "x": 1.37,
+        "z": -7.59
+    },
+    {
+        "type": "build",
+        "body": "2",
+        "x": 2.7,
+        "z": -7.71
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": 3.82,
+        "z": -8.26
+    },
+    {
+        "type": "build",
+        "body": "2 3",
+        "x": 4.98,
+        "z": -8.26
+    },
+    {
+        "type": "build",
+        "body": "2",
+        "x": 6.13,
+        "z": -8.17
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": 7.23,
+        "z": -8.4
+    },
+    {
+        "type": "nothing",
+        "body": "BONE: Do Nothing",
+        "corner": true,
+        "x": 8.29,
+        "z": -7.71
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": 8.01,
+        "z": -6.65
+    },
+    {
+        "type": "build",
+        "body": "2",
+        "x": 8.04,
+        "z": -5.57
+    },
+    {
+        "type": "losecheese",
+        "cheese": 2,
+        "body": "Lose 2 pieces of cheese",
+        "x": 8.33,
+        "z": -4.3
+    },
+    {
+        "type": "build",
+        "body": "2",
+        "x": 8.39,
+        "z": -3.05
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": 8.57,
+        "z": -1.89
+    },
+    {
+        "type": "goback",
+        "spaces": 6,
+        "body": "Mad Dog!! Go back to bone",
+        "x": 7.98,
+        "z": -0.46
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": 8.54,
+        "z": 1
+    },
+    {
+        "type": "build",
+        "body": "2 3",
+        "x": 8.51,
+        "z": 2.29
+    },
+    {
+        "type": "goforward",
+        "spaces": 19,
+        "body": "Tasty! Move ahead to cheese wheel",
+        "x": 8.39,
+        "z": 3.39
+    },
+    {
+        "type": "build",
+        "body": "2",
+        "x": 8.72,
+        "z": 4.64
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": 9.17,
+        "z": 5.81
+    },
+    {
+        "type": "goback",
+        "spaces": 4,
+        "body": "Go back four spaces",
+        "x": 9.06,
+        "z": 7.17
+    },
+    {
+        "type": "build",
+        "body": "2",
+        "corner": true,
+        "x": 8.31,
+        "z": 8.2
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": 7.11,
+        "z": 8.37
+    },
+    {
+        "type": "build",
+        "body": "2 3",
+        "x": 5.96,
+        "z": 8.14
+    },
+    {
+        "type": "stealcheese",
+        "cheese": 3,
+        "body": "Take 3 pieces of cheese from rival with the most",
+        "x": 4.73,
+        "z": 7.74
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": 3.24,
+        "z": 7.85
+    },
+    {
+        "type": "losecheese",
+        "cheese": 3,
+        "body": "Caught Napping! Lose 3 pieces of cheese.",
+        "x": 1.6,
+        "z": 8.18
+    },
+    {
+        "type": "build",
+        "body": "2 3 4",
+        "x": -0.17,
+        "z": 8.04
+    },
+    {
+        "type": "build",
+        "body": "2 3",
+        "x": -1.52,
+        "z": 7.84
+    },
+    {
+        "type": "goback",
+        "spaces": 6,
+        "body": "Go back 6 spaces",
+        "x": -3.09,
+        "z": 7.87
+    },
+    {
+        "type": "build",
+        "body": "2",
+        "x": -4.71,
+        "z": 7.92
+    },
+    {
+        "type": "nothing",
+        "body": "SAFE",
+        "corner": "if-from-cheese",
+        "x": -6.28,
+        "z": 8.17
+    },
+    {
+        "type": "buildtwo",
+        "body": "2 3 4",
+        "x": -7.82,
+        "z": 6.76
+    },
+    {
+        "type": "turncrank",
+        "body": "TURN CRANK",
+        "corner": true,
+        "x": -8.44,
+        "z": 4.93
+    },
+    {
+        "type": "buildtwo",
+        "body": "2 3 4",
+        "x": -7.04,
+        "z": 3.41
+    },
+    {
+        "type": "gaincheese",
+        "cheese": 2,
+        "body": "Take 2 pieces of cheese",
+        "corner": true,
+        "x": -5.41,
+        "z": 3.06
+    },
+    {
+        "type": "cheesewheel",
+        "body": "cheese Wheel",
+        "x": -6.23,
+        "z": 5.48
+    }
+]

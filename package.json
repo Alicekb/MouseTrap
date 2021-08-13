@@ -1,0 +1,14 @@
+{
+  "name": "mousetrap",
+  "version": "1.0.0",
+  "description": "Mousetrap in BabylonJS",
+  "main": "mousetrap.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alice Balbuena & Nicole Brooks",
+  "license": "ISC",
+  "dependencies": {
+    "babylonjs": "^4.2.0"
+  }
+}
