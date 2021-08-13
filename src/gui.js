@@ -1,4 +1,12 @@
-import { AdvancedDynamicTexture, Button, Control, Rectangle, TextBlock } from '@babylonjs/gui';
+import { 
+  AdvancedDynamicTexture, 
+  Button, 
+  Control, 
+  Rectangle, 
+  TextBlock, 
+  RadioButton, 
+  StackPanel} from '@babylonjs/gui';
+import { Color3 } from '@babylonjs/core';
 
 export default class GUI {
   constructor() {
@@ -12,6 +20,7 @@ export default class GUI {
     button.height = "50px";
     button.color = 'black';
     button.cornerRaidus = 20;
+    button.thickness = 4;
     button.background = "pink";
     button.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
     button.left = "-20px";
@@ -24,32 +33,70 @@ export default class GUI {
     const backdrop = new Rectangle(`startingCard`);
     backdrop.width = "1000px";
     backdrop.height = "700px";
-    backdrop.cornerRadius = 20;
-    backdrop.color = "white";
-    backdrop.thickness = 2;
-    backdrop.background = "black";
     backdrop.alpha = 0.7;
+    backdrop.cornerRadius = 20;
+    backdrop.color = "black";
+    backdrop.thickness = 10;
+    backdrop.background = "skyblue";
 
     const header = new TextBlock(`startingHeader`, "Mouse Trap!");
     header.fontFamily = 'Carter One', 'cursive';
     header.fontSizeInPixels = 100;
-    header.color = "white";
-    header.top =  "-250px";
-    header.parent = backdrop;
+    header.color = "black";
+    header.thickness = 2;
+    header.background = "white";
+    header.top =  "-220px";
 
-    const learnBlock = new TextBlock(`learnBlock`, "Learn how to play at: ");
-    learnBlock.fontFamily = 'Carter One', 'cursive';
-    learnBlock.fontSizeInPixels = 22;
-    learnBlock.color = "white";
-    learnBlock.alpha = 0.7;
-    learnBlock.top = "-160px";
-    learnBlock.parent = backdrop;
+    const linkBlockButton = new Button.CreateSimpleButton('linkBlockButton', 'Learn How to Play');
+    linkBlockButton.fontFamily = 'Carter One', 'cursive';
+    linkBlockButton.fontSizeInPixels = 22;
+    linkBlockButton.height = "50px";
+    linkBlockButton.width = "700px";
+    linkBlockButton.thickness = 4;
+    linkBlockButton.color = "black";
+    linkBlockButton.background = "white";
+    linkBlockButton.top = "-120px";
 
-    // const header = 
+    const numberOfPlayersLabel = new TextBlock(`numberOfPlayersHeader`, "Select Number of Players:");
+    numberOfPlayersLabel.fontFamily = 'Carter One', 'cursive';
+    numberOfPlayersLabel.fontSizeInPixels = 40;
+    numberOfPlayersLabel.height = "50px";
+    numberOfPlayersLabel.color = "black";
+    numberOfPlayersLabel.thickness = 2;
+    numberOfPlayersLabel.background = "white";
+    numberOfPlayersLabel.top = "-40px";
 
+    const radioPanel = new StackPanel();
+    radioPanel.height = "250px"
+    radioPanel.top = "120px";
+
+    ['2 players', '3 players', '4 players'].forEach(name => {
+      const radioButtonPanel = new RadioButton.AddRadioButtonWithHeader(name, 'numberOfPlayers', name === '2 players' ? true : false, (button, state) => {
+        if (state) {
+          console.log('2');
+        };
+      });
+
+      radioButtonPanel.fontSize = 35;
+      radioButtonPanel.fontFamily = 'Carter One', 'cursive';
+      radioButtonPanel.height = "60px";
+      radioButtonPanel.children[1].color = "black";
+
+      radioPanel.addControl(radioButtonPanel);
+    });
+
+    linkBlockButton.onPointerClickObservable.add(() => {
+      window.open('https://www.hasbro.com/common/instruct/mtrap.pdf', '_blank')
+    })
+
+    const startbuttion = new Button.CreateSimpleButton('startButton', 'Start Game');
+
+    backdrop.addControl(header);
+    backdrop.addControl(linkBlockButton);
+    backdrop.addControl(numberOfPlayersLabel);
+
+    backdrop.addControl(radioPanel);
     this.advancedTexture.addControl(backdrop);
-    this.advancedTexture.addControl(header);
-    this.advancedTexture.addControl(learnBlock);
   }
 
   createPopUpBox(name, texts) {
